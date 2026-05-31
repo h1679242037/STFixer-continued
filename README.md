@@ -1,5 +1,7 @@
 # STFixer (aka CloudFix)
 
+> Community continuation notice: this fork is intended to continue maintenance of @Selectively11's original STFixer after the upstream repository was archived on May 3, 2026. Authorization and license clarification are still pending; original authorship remains credited to @Selectively11.
+
 Originally just a fix for the 'broken Capcom game saves' problem that is caused by SteamTools silliness . Now it does that and also a lot of other things too!
 
 > Please disable Steam Cloud for non-owned games in their Steam properties. Manually backup your saves for all non-owned games!
