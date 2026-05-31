@@ -1,39 +1,97 @@
-# STFixer (aka CloudFix)
+# STFixer
 
-> Community continuation notice: this fork is intended to continue maintenance of @Selectively11's original STFixer after the upstream repository was archived on May 3, 2026. Authorization and license clarification are still pending; original authorship remains credited to @Selectively11.
+Community continuation of STFixer, originally created by @Selectively11.
 
-Originally just a fix for the 'broken Capcom game saves' problem that is caused by SteamTools silliness . Now it does that and also a lot of other things too!
+STFixer is a Windows utility for repairing common SteamTools-related issues, including broken saves in some Capcom games, first-time SteamTools setup when backend services are unavailable, and missing or mismatched SteamTools DLLs.
 
-> Please disable Steam Cloud for non-owned games in their Steam properties. Manually backup your saves for all non-owned games!
+> Disable Steam Cloud for affected non-owned games and manually back up saves before applying patches.
 
-## What?
+## Download
 
-SteamTools messes with Steam Cloud requests to "fix" Steam Cloud for non-owned games so that save syncing functions - or, rather, so that it used to work before Valve fixed it recently. Anyway, it has those games read/write the App ID for Steam Screenshots! This causes all kinds of problems! Capcom titles are super impacted - the majority of Capcom titles released in the last few years will simply refuse to save at all in this scenario.
+Download `STFixer.exe` from the latest release:
 
-This tool fixes this behavior by disabling the SteamTools cloud "fix" and instead allowing Steam Cloud saving to fail to sync, as they should.
+https://github.com/h1679242037/STFixer-continued/releases/latest
 
-This tool also can fix other weird SteamTools behaviors. You can install SteamTools, even if their backend is down. You can replace the SteamTools manifest endpoint with a different one. It can diagnose a broken SteamTools install and repair it. It's a good tool.
+## What It Fixes
 
+- Capcom games that cannot create or write saves because of SteamTools cloud behavior.
+- SteamTools first-time setup when its backend is down.
+- SteamTools Desktop overwriting patched DLLs on startup.
+- Missing, outdated, or mismatched `xinput1_4.dll` and `dwmapi.dll`.
 
 ## Usage
 
-1. Download `STFixer.exe` from the [latest release](https://github.com/Selectively11/STFixer/releases/latest)
-2. Run it
-3. Select whichever patch you want
-4. Restart Steam when prompted, or return to the main menu and run any other patches you want. Once you are done, restart Steam.
+1. Close Steam and SteamTools.
+2. Run `STFixer.exe`.
+3. Confirm the detected Steam install path, or enter the correct one.
+4. Choose the patch you need.
+5. Restart Steam and SteamTools when finished.
 
-To undo the patch, run STFixer again and select **Disable (restore originals)**.
+To undo changes, run STFixer again and select **Disable Everything**.
 
-If you get a Capcom save error even after enabling this tool, disable Steam Cloud for the affected game in the Steam properties page for that game, clear the userdata folder for the game (`<Steam install path>\userdata\<steamid>\<appid>`), restart Steam, and try again.
+## Menu Options
 
-## What we do
+### 1. Setup SteamTools Offline
 
-STFixer patches the SteamTools DLLs as well as its encrypted payload cache to make it better. Original files are backed up automatically and can be restored at any time through the Disable option.
+Patches SteamTools setup behavior so a new or repaired SteamTools installation can work even when its backend server is unavailable.
+
+### 2. Capcom Game Save Fix
+
+Disables the SteamTools cloud behavior that can prevent some Capcom games from creating saves. If saves still fail after this patch, disable Steam Cloud for the affected game, clear that game's userdata folder, restart Steam, and test again.
+
+Userdata path:
+
+```text
+<Steam install path>\userdata\<steamid>\<appid>
+```
+
+### 3. Patch SteamTools App
+
+Patches `SteamTools.exe` so SteamTools Desktop does not overwrite STFixer-patched DLLs when it starts.
+
+### 4. Repair SteamTools DLLs
+
+Downloads fresh SteamTools DLLs and replaces existing copies. Use this when DLLs are missing, mismatched, or corrupted. If you already applied option 2, avoid running option 4 afterward unless you plan to re-apply option 2.
+
+### 5. Disable Everything
+
+Restores original files from backups created by STFixer.
 
 ## Notes
 
-- STFixer auto-detects your Steam install path from the registry, but you can override this
-- Backups are created before any changes are made
-- If SteamTools updates, you may need to re-run STFixer
-- The tool checks for updates on launch
-- This tool is likely to break with an update to SteamTools, but I use SteamTools personally so you can expect me to keep it up to date.
+- Backups are created before patching.
+- STFixer auto-detects Steam from the Windows registry, but the path can be overridden.
+- SteamTools or Steam updates may require rerunning STFixer.
+- This fork is maintained as a continuation after the upstream repository was archived. Authorization/license clarification is pending.
+
+## Building
+
+Requirements:
+
+- .NET 9 SDK
+- Windows x64 build environment
+- Visual Studio Build Tools or MinGW for `Stella\stella_fallback.dll`
+
+Build the Stella fallback DLL first, then publish:
+
+```powershell
+cd Stella
+.\build.bat
+cd ..
+dotnet publish .\CloudFix.csproj -c Release
+```
+
+If you are using MinGW instead of Visual Studio Build Tools:
+
+```powershell
+cd Stella
+x86_64-w64-mingw32-gcc -shared -O1 -Wall -Wextra -o stella_fallback.dll stella_fallback.c stella_fallback.def -lwinhttp '-Wl,--subsystem,windows' '-Wl,--out-implib,stella_fallback.lib'
+cd ..
+dotnet publish .\CloudFix.csproj -c Release
+```
+
+The published executable is written to:
+
+```text
+bin\Release\net9.0\win-x64\publish\STFixer.exe
+```
