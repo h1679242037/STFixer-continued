@@ -1,45 +1,49 @@
-# STFixer
+# STFixer - SteamTools 存档与离线初始化修复工具
 
-Community continuation of STFixer, originally created by @Selectively11.
+STFixer 是一个 Windows 工具，用来修复 SteamTools 引起的常见问题：部分游戏无法创建/写入存档、SteamTools 后端不可用时无法完成首次初始化、SteamTools Desktop 覆盖补丁 DLL，以及 `xinput1_4.dll` / `dwmapi.dll` 缺失或版本不匹配。
 
-STFixer is a Windows utility for repairing common SteamTools-related issues, including broken saves in some Capcom games, first-time SteamTools setup when backend services are unavailable, and missing or mismatched SteamTools DLLs.
+English: [README.en.md](README.en.md)
 
-> Disable Steam Cloud for affected non-owned games and manually back up saves before applying patches.
+> 本维护分支基于 @Selectively11 创建的 STFixer；原仓库已归档。授权与许可证说明仍在确认中。
 
-## Download
+> 对受影响的非拥有游戏，建议先关闭 Steam Cloud，并手动备份存档后再打补丁。
 
-Download `STFixer.exe` from the latest release:
+## 下载
+
+从最新 Release 下载 `STFixer.exe`：
 
 https://github.com/h1679242037/STFixer-continued/releases/latest
 
-## What It Fixes
+## 主要用途
 
-- Capcom games that cannot create or write saves because of SteamTools cloud behavior.
-- SteamTools first-time setup when its backend is down.
-- SteamTools Desktop overwriting patched DLLs on startup.
-- Missing, outdated, or mismatched `xinput1_4.dll` and `dwmapi.dll`.
+- 修复部分 Capcom 游戏无法创建或写入存档的问题。
+- 修复 SteamTools 后端不可用时的首次初始化问题。
+- 防止 SteamTools Desktop 启动时覆盖已打好的补丁 DLL。
+- 修复缺失、过旧或不匹配的 `xinput1_4.dll` 和 `dwmapi.dll`。
 
-## Usage
+## 使用方法
 
-1. Close Steam and SteamTools.
-2. Run `STFixer.exe`.
-3. Confirm the detected Steam install path, or enter the correct one.
-4. Choose the patch you need.
-5. Restart Steam and SteamTools when finished.
+1. 关闭 Steam 和 SteamTools。
+2. 运行 `STFixer.exe`。
+3. 确认自动检测到的 Steam 路径，或手动输入正确路径。
+4. 选择需要的修复项。
+5. 完成后重启 Steam 和 SteamTools。
 
-To undo changes, run STFixer again and select **Disable Everything**.
+如需撤销修改，重新运行 STFixer，选择 **Disable Everything**。
 
-## Menu Options
+## 菜单说明
 
 ### 1. Setup SteamTools Offline
 
-Patches SteamTools setup behavior so a new or repaired SteamTools installation can work even when its backend server is unavailable.
+离线初始化修复。用于 SteamTools 后端服务器不可用、首次安装/修复后无法正常工作的情况。
 
 ### 2. Capcom Game Save Fix
 
-Disables the SteamTools cloud behavior that can prevent some Capcom games from creating saves. If saves still fail after this patch, disable Steam Cloud for the affected game, clear that game's userdata folder, restart Steam, and test again.
+存档修复。用于 SteamTools 的云存档行为导致部分游戏无法创建存档的情况。
 
-Userdata path:
+如果打补丁后仍无法保存，尝试关闭该游戏的 Steam Cloud，清理对应 userdata 目录，重启 Steam 后再测试。
+
+userdata 路径：
 
 ```text
 <Steam install path>\userdata\<steamid>\<appid>
@@ -47,32 +51,34 @@ Userdata path:
 
 ### 3. Patch SteamTools App
 
-Patches `SteamTools.exe` so SteamTools Desktop does not overwrite STFixer-patched DLLs when it starts.
+修补 `SteamTools.exe`，防止 SteamTools Desktop 每次启动时覆盖 STFixer 已修补的 DLL。
 
 ### 4. Repair SteamTools DLLs
 
-Downloads fresh SteamTools DLLs and replaces existing copies. Use this when DLLs are missing, mismatched, or corrupted. If you already applied option 2, avoid running option 4 afterward unless you plan to re-apply option 2.
+重新下载并替换 SteamTools 核心 DLL。适合 DLL 缺失、版本不对或损坏时使用。
+
+注意：如果已经成功执行选项 2，不要立刻再执行选项 4；选项 4 可能会覆盖刚打好的存档修复补丁。如需执行，请之后重新执行选项 2。
 
 ### 5. Disable Everything
 
-Restores original files from backups created by STFixer.
+从 STFixer 自动创建的备份中恢复原始文件，撤销已应用的修改。
 
-## Notes
+## 注意事项
 
-- Backups are created before patching.
-- STFixer auto-detects Steam from the Windows registry, but the path can be overridden.
-- SteamTools or Steam updates may require rerunning STFixer.
-- This fork is maintained as a continuation after the upstream repository was archived. Authorization/license clarification is pending.
+- STFixer 会在修改前自动备份文件。
+- Steam 路径会从 Windows 注册表自动检测，也可以手动指定。
+- SteamTools 或 Steam 更新后，可能需要重新运行 STFixer。
+- 本分支是原仓库归档后的延续维护版。
 
-## Building
+## 构建
 
-Requirements:
+要求：
 
 - .NET 9 SDK
-- Windows x64 build environment
-- Visual Studio Build Tools or MinGW for `Stella\stella_fallback.dll`
+- Windows x64 构建环境
+- Visual Studio Build Tools 或 MinGW，用于构建 `Stella\stella_fallback.dll`
 
-Build the Stella fallback DLL first, then publish:
+先构建 Stella fallback DLL，再发布主程序：
 
 ```powershell
 cd Stella
@@ -81,7 +87,7 @@ cd ..
 dotnet publish .\CloudFix.csproj -c Release
 ```
 
-If you are using MinGW instead of Visual Studio Build Tools:
+如果使用 MinGW：
 
 ```powershell
 cd Stella
@@ -90,7 +96,7 @@ cd ..
 dotnet publish .\CloudFix.csproj -c Release
 ```
 
-The published executable is written to:
+发布产物位置：
 
 ```text
 bin\Release\net9.0\win-x64\publish\STFixer.exe
